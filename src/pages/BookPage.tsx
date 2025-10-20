@@ -7,7 +7,7 @@ const BooksPage = () => {
   const [deleteBook, { isLoading: isDeleting }] = useDeleteBookMutation();
   const navigate = useNavigate();
 
-  // ✅ Properly typed books array
+
   const books: IBook[] = data?.data || [];
 
   const handleDelete = async (id: string, title: string) => {
@@ -15,7 +15,8 @@ const BooksPage = () => {
       try {
         await deleteBook(id).unwrap();
         alert("✅ Book deleted successfully");
-        // No need to refetch - RTK Query auto-updates cache
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error("❌ Delete failed:", error);
         const errorMessage = error?.data?.message || "Failed to delete book";

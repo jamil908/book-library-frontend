@@ -1,54 +1,54 @@
-import { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router-dom";
 import { useCreateBookMutation } from "../services/bookApi";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import type { ICreateBook } from "../types/book.types";
 
 const AddBookPage = () => {
   const navigate = useNavigate();
-  const [createBook, { isLoading, error }] = useCreateBookMutation();
+  const [createBook] = useCreateBookMutation();
 
-  const [formData, setFormData] = useState<ICreateBook>({
-    title: "",
-    author: "",
-    genre: "FICTION",
-    isbn: "",
-    description: "",
-    copies: 1,
-    available: true,
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<ICreateBook>({
+    defaultValues: {
+      title: "",
+      author: "",
+      genre: "FICTION",
+      isbn: "",
+      description: "",
+      copies: 1,
+      available: true,
+    },
   });
 
-  // ✅ Auto-update available when copies changes
-  useEffect(() => {
-    if (formData.copies === 0) {
-      setFormData(prev => ({ ...prev, available: false }));
-    }
-  }, [formData.copies]);
+  const copies = watch("copies");
 
-  const handleCopiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const copies = Number(e.target.value);
-    setFormData({
-      ...formData,
-      copies,
-      // ✅ Auto-set available based on copies
-      available: copies > 0 ? formData.available : false,
-    });
-  };
+  // Automatically set availability based on copies
+  if (copies === 0) {
+    setValue("available", false);
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // ✅ Validation: If copies is 0, force available to false
-    const dataToSubmit: ICreateBook = {
-      ...formData,
-      available: formData.copies > 0 ? formData.available : false,
+  const onSubmit = async (data: ICreateBook) => {
+    const payload: ICreateBook = {
+      ...data,
+      available: data.copies > 0 ? data.available ?? true : false,
     };
 
     try {
-      await createBook(dataToSubmit).unwrap();
-      alert("✅ Book added successfully!");
+      await createBook(payload).unwrap();
+      toast.success("✅ Book added successfully!");
+      reset();
       navigate("/books");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to add book:", err);
+      toast.error(err?.data?.message || "Failed to add book");
     }
   };
 
@@ -64,52 +64,35 @@ const AddBookPage = () => {
         </button>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {(error as any)?.data?.message || "Failed to add book"}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Title <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium mb-1">Title *</label>
           <input
+            {...register("title", { required: true })}
             type="text"
             placeholder="Enter book title"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            required
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         {/* Author */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Author <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium mb-1">Author *</label>
           <input
+            {...register("author", { required: true })}
             type="text"
             placeholder="Enter author name"
-            value={formData.author}
-            onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            required
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         {/* Genre */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Genre <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium mb-1">Genre *</label>
           <select
-            value={formData.genre}
-            onChange={(e) => setFormData({ ...formData, genre: e.target.value as any })}
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            {...register("genre")}
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
           >
             <option value="FICTION">Fiction</option>
             <option value="NON_FICTION">Non-Fiction</option>
@@ -122,29 +105,22 @@ const AddBookPage = () => {
 
         {/* ISBN */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            ISBN <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium mb-1">ISBN *</label>
           <input
+            {...register("isbn", { required: true })}
             type="text"
             placeholder="Enter ISBN"
-            value={formData.isbn}
-            onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            required
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-medium mb-1">Description</label>
           <textarea
+            {...register("description")}
             placeholder="Enter book description (optional)"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
             rows={4}
           />
         </div>
@@ -152,62 +128,34 @@ const AddBookPage = () => {
         {/* Copies */}
         <div>
           <label className="block text-sm font-medium mb-1">
-            Number of Copies <span className="text-red-500">*</span>
+            Number of Copies *
           </label>
           <input
+            {...register("copies", { valueAsNumber: true })}
             type="number"
-            placeholder="Number of copies"
-            value={formData.copies}
-            onChange={handleCopiesChange} // ✅ Use custom handler
-            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             min={0}
-            required
+            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-indigo-500"
           />
-          {formData.copies === 0 && (
-            <p className="text-sm text-amber-600 mt-1">
-              ⚠️ Books with 0 copies will be marked as unavailable
-            </p>
-          )}
         </div>
 
         {/* Available Checkbox */}
-        <div>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.available}
-              onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
-              disabled={formData.copies === 0} // ✅ Disable if no copies
-              className="w-4 h-4 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <span className={`text-sm font-medium ${formData.copies === 0 ? 'text-gray-400' : ''}`}>
-              Mark as available for borrowing
-            </span>
-          </label>
-          {formData.copies === 0 && (
-            <p className="text-xs text-gray-500 mt-1 ml-6">
-              Cannot be available when copies = 0
-            </p>
-          )}
+        <div className="flex items-center">
+          <input
+            {...register("available")}
+            type="checkbox"
+            className="mr-2"
+          />
+          <label>Available</label>
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-3 pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            {isLoading ? "Adding Book..." : "Add Book"}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/books")}
-            className="px-6 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 transition"
-          >
-            Cancel
-          </button>
-        </div>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {isSubmitting ? "Adding..." : "Add Book"}
+        </button>
       </form>
     </div>
   );

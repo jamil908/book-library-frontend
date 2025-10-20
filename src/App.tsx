@@ -12,6 +12,7 @@ import LibraryLandingPage from "./pages/LandingPage";
 import Layout from "./layouts/layout";
 import AddBookPage from "./pages/AddBookPage";
 import { Toaster } from "react-hot-toast";
+import BookDetailsPage from "./pages/BookDetailsPage";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         
           <Route path="/books" element={<BooksPage />} />
           <Route path="/create-book" element={<AddBookPage/>} />
+             <Route path="/books/:id" element={<BookDetailsPage />} />
           <Route path="/borrow-summary" element={<BorrowSummaryPage />} />
           <Route path="/edit-book/:id" element={<EditBookPage />} />
           <Route path="/borrow/:bookId" element={<BorrowBookPage />} />

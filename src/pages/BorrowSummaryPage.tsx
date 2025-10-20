@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGetBorrowSummaryQuery } from "../services/bookApi";
 import { useNavigate } from "react-router-dom";
 
