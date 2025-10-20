@@ -1,37 +1,61 @@
-import { useEffect, useState } from "react";
+import { useGetBorrowSummaryQuery } from "../services/bookApi";
+import { useNavigate } from "react-router-dom";
 
 const BorrowSummaryPage = () => {
-  const [summary, setSummary] = useState<any[]>([]);
+  const { data, isLoading, isError } = useGetBorrowSummaryQuery();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // temporary mock – later connect to backend /borrow-summary endpoint
-    setSummary([
-      { title: "Book A", isbn: "1234", totalBorrowed: 3 },
-      { title: "Book B", isbn: "5678", totalBorrowed: 1 },
-    ]);
-  }, []);
+  const borrows = data?.data || [];
+
+  if (isLoading) return <div className="p-4">Loading borrow summary...</div>;
+  if (isError) return <div className="p-4 text-red-500">Failed to load summary</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">📖 Borrow Summary</h1>
-      <table className="w-full border-collapse border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Title</th>
-            <th className="border p-2">ISBN</th>
-            <th className="border p-2">Total Borrowed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {summary.map((item, idx) => (
-            <tr key={idx}>
-              <td className="border p-2">{item.title}</td>
-              <td className="border p-2">{item.isbn}</td>
-              <td className="border p-2">{item.totalBorrowed}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">📊 Borrow Summary</h1>
+        <button
+          onClick={() => navigate("/books")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Back to Books
+        </button>
+      </div>
+
+      {borrows.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          <p className="text-xl mb-2">No borrowed books yet</p>
+          <button
+            onClick={() => navigate("/books")}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Browse Books to Borrow
+          </button>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border p-2">Book Title</th>
+                <th className="border p-2">ISBN</th>
+                <th className="border p-2">Total Quantity Borrowed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {borrows.map((borrow: any) => (
+                <tr key={borrow._id}>
+                  <td className="border p-2">{borrow.bookTitle}</td>
+                  <td className="border p-2">{borrow.isbn}</td>
+                  <td className="border p-2 text-center font-semibold">
+                    {borrow.totalQuantity}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

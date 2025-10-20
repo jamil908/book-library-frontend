@@ -1,43 +1,84 @@
+
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { ApiResponse } from "../types/api.types";
+import type { IBook, ICreateBook, IUpdateBook } from "../types/book.types";
+import type { IBorrow, IBorrowSummary, ICreateBorrow } from "../types/borrow.types";
 
 export const bookApi = createApi({
   reducerPath: "bookApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
-  tagTypes: ["Book", "Borrow"],
+  tagTypes: ["Books", "Borrows"],
   endpoints: (builder) => ({
-    getBooks: builder.query<any, void>({
+    // 📚 Get all books
+    getBooks: builder.query<ApiResponse<IBook[]>, void>({
       query: () => "/books",
-      providesTags: ["Book"],
+      providesTags: ["Books"],
     }),
-    addBook: builder.mutation<any, any>({
+
+    // 📘 Get single book by ID
+    getBookById: builder.query<ApiResponse<IBook>, string>({
+      query: (id) => `/books/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Books", id }],
+    }),
+
+    // ➕ Add a new book
+    createBook: builder.mutation<ApiResponse<IBook>, ICreateBook>({
       query: (newBook) => ({
         url: "/books",
         method: "POST",
         body: newBook,
       }),
-      invalidatesTags: ["Book"],
+      invalidatesTags: ["Books"],
     }),
-    updateBook: builder.mutation<any, { id: string; data: any }>({
-      query: ({ id, data }) => ({
+
+    // ✏️ Update book
+    updateBook: builder.mutation<ApiResponse<IBook>, IUpdateBook>({
+      query: ({ id, ...update }) => ({
         url: `/books/${id}`,
         method: "PUT",
-        body: data,
+        body: update,
       }),
-      invalidatesTags: ["Book"],
+      invalidatesTags: (_result, _error, { id }) => [
+        "Books",
+        { type: "Books", id },
+      ],
     }),
-    deleteBook: builder.mutation<any, string>({
+
+    // ❌ Delete book
+    deleteBook: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/books/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Book"],
+      invalidatesTags: ["Books"],
+    }),
+
+    // 📖 Borrow a book
+    borrowBook: builder.mutation<ApiResponse<IBorrow>, ICreateBorrow>({
+      query: ({ bookId, ...borrow }) => ({
+        url: `/borrows/${bookId}`,
+        method: "POST",
+        body: borrow,
+      }),
+      invalidatesTags: ["Borrows", "Books"],
+    }),
+
+    // 📊 Borrow summary
+    getBorrowSummary: builder.query<ApiResponse<IBorrowSummary[]>, void>({
+      query: () => "/borrows/summary",
+      providesTags: ["Borrows"],
     }),
   }),
 });
 
 export const {
   useGetBooksQuery,
-  useAddBookMutation,
+  useGetBookByIdQuery,
+  useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useBorrowBookMutation,
+  useGetBorrowSummaryQuery,
 } = bookApi;
+
