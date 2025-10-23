@@ -8,7 +8,7 @@ import type { IBorrow, IBorrowSummary, ICreateBorrow } from "../types/borrow.typ
 export const bookApi = createApi({
   reducerPath: "bookApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
-  tagTypes: ["Books", "Borrows"],
+  tagTypes: ["Books", "Borrow"],
   endpoints: (builder) => ({
     // 📚 Get all books
     getBooks: builder.query<ApiResponse<IBook[]>, void>({
@@ -57,17 +57,17 @@ export const bookApi = createApi({
     // 📖 Borrow a book
     borrowBook: builder.mutation<ApiResponse<IBorrow>, ICreateBorrow>({
       query: ({ bookId, ...borrow }) => ({
-        url: `/borrows/${bookId}`,
+        url: `/borrow/${bookId}`,
         method: "POST",
         body: borrow,
       }),
-      invalidatesTags: ["Borrows", "Books"],
+      invalidatesTags: ["Borrow", "Books"],
     }),
 
     // 📊 Borrow summary
     getBorrowSummary: builder.query<ApiResponse<IBorrowSummary[]>, void>({
-      query: () => "/borrows/summary",
-      providesTags: ["Borrows"],
+      query: () => "/borrow/summary",
+      providesTags: ["Borrow"],
     }),
   }),
 });

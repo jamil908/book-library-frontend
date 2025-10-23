@@ -1,69 +1,102 @@
-# React + TypeScript + Vite
+# 📚 Library Management Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern frontend web application for managing books and borrow records in a library system.  
+Built using **React (TypeScript)**, **Vite / Next.js**, and **Tailwind CSS**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- 📖 **Book Management**
+  - View all books with filters, sorting, and pagination
+  - Add, edit, and delete books (CRUD)
+  - Dynamic “Available / Unavailable” status display
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 📦 **Borrow Management**
+  - Borrow books with quantity and due date
+  - Real-time book availability updates
+  - Summary of borrowed books (with total quantity)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 🔍 **Search & Filter**
+  - Search by book title or author
+  - Filter by genre
+  - Sort by creation date or copies count
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- 🧩 **UI Highlights**
+  - Responsive design (mobile-first)
+  - Built with ShadCN UI / Tailwind components
+  - Reusable form, modal, and table components
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|-----------|---------------|
+| **Framework** | React (TypeScript) |
+| **Styling** | Tailwind CSS, ShadCN UI |
+| **State Management** | React Hooks /   / Redux Toolkit |
+| **API Communication** | Axios / Fetch API |
+| **Routing** | React Router DOM |
+| **Build Tool** | Vite |
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Clone the repository
+```bash
+git clone http://github.com/jamil908/book-library-frontend
+cd library-frontend
 ```
+## 2️⃣ Install dependencies
+npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 3️⃣ Create environment file
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a .env file in the root folder:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+VITE_API_URL=http://localhost:5000/api
+
+
+Change the URL if your backend runs elsewhere (e.g., production).
+
+## 4️⃣ Run development server
+npm run dev
+
+
+The app will be live at:
+👉 http://localhost:5173
+
+## 🧭 Project Structure
+src/
+ ├── layOuts/
+ │   ├── layouts.tsx
+ ├── pages/
+ │   ├── AddBookPage.tsx
+ │   ├── BookDetailsPage.tsx
+ │   ├── BookPage.tsx
+ │   ├── BorrowBookPage.tsx
+ │   ├── BorrowBookSummery.tsx
+ │   ├── EditBookPage.tsx
+ │   ├── LandingPage.tsx
+ │   ├── Navbar.tsx
+ ├── redux/
+  │   └── store.ts
+ ├── services/
+ │   ├── bookApi.ts
+ ├── types/
+ │   ├── api.types.ts
+ │   └── book.types.ts
+ │   └── borrow.types.ts
+ ├── App.tsx
+ ├── main.tsx
+ └── index.css
+
+
+## 🧑‍💻 Author
+
+### Md Jamil Hossain Rafi
+📍 Chittagong, Bangladesh
+💻 GitHub : https://github.com/jamil908
+ | Portfolio
